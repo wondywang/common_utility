@@ -1,6 +1,6 @@
 #include <string>
 
-inline int SelfNet2Ip(const string &net_name, unsigned int& net_ip)
+int SelfNet2Ip(const string &net_name, unsigned int& net_ip)
 {
 	#define BUFSIZE 1024
 	int _sock_fd;
