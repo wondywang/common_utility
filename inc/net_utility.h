@@ -47,3 +47,17 @@ int SelfNet2Ip(const string &net_name, unsigned int& net_ip)
 
 	return -1;
 }
+
+unsigned int StrIP2Int(const string &strIP)
+{
+    // IPv4地址结构体
+    struct in_addr stAddr;
+    if(inet_pton(AF_INET, strIP.c_str(), (void *)&stAddr) > 0)
+    {
+        return stAddr.s_addr;
+    }
+    else
+    {
+        return 0;
+    }
+}
