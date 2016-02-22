@@ -61,3 +61,10 @@ unsigned int StrIP2Int(const string &strIP)
         return 0;
     }
 }
+
+char* net2Str(unsigned ipNet)
+{
+	struct sockaddr_in tempAddr;
+	tempAddr.sin_addr.s_addr = ipNet;
+	return (char*)inet_ntoa(tempAddr.sin_addr);
+}
