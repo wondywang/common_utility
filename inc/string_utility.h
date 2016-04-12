@@ -65,3 +65,35 @@ char *format_time( time_t tm)
 
     return str_tm;
 }
+
+/*
+   SplitStr字符串分割函数，可以同时使用多种字符分割，无返回值
+   参数1：pOriginal待分割的字符串
+   参数2：pSplitor 指定分隔符列表，里面的每个字符（或者任意多个里面的字符组成的字符串）都视为一个分隔符
+   例如：pSplitor为",;" 那么字符','和';'都会被视为分割字符，
+   则123;345,abc;,;cdf 会被分割为123、456、abc、cdf四个字符串通过result返回
+   参数3：result 保存结果的容器
+*/
+void SplitStr(const char* pOriginal,const char* pSplitor, std::vector<std::string>& result) 
+{
+    size_t sHead = strspn(pOriginal, pSplitor);
+    size_t sEnd = 0;
+    const char * pHead = pOriginal + sHead;
+    const char * pEnd = pHead;
+    while( '\0' != *pHead) 
+    {
+        std::string strElement;
+        sEnd = strcspn(pHead, pSplitor);
+        pEnd = pHead + sEnd; 
+        if( '\0' == *pEnd ) 
+        {       
+            strElement.assign(pHead, pEnd - pHead); 
+            result.push_back(strElement);
+            break;  
+        }       
+        strElement.assign(pHead, pEnd - pHead); 
+        result.push_back(strElement);
+        sHead = strspn(pEnd, pSplitor);
+        pHead = pEnd + sHead;
+    }
+}
