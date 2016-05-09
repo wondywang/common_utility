@@ -52,6 +52,36 @@ void HexToStr(string &sDest, const string &sSrc)
 	sDest = szDest;
 }
 
+int Str2Hex(const char *sSrc, char *sDest, int nSrcLen )
+{
+	int i, nHighBits, nLowBits;
+	for( i = 0; i < nSrcLen; i += 2 )
+	{
+		nHighBits = sSrc[i];
+		nLowBits  = sSrc[i + 1];
+
+		if( !isxdigit(nHighBits) )
+			return -1;
+
+		if( nHighBits > 0x39 )
+			nHighBits -= 0x37;
+		else
+			nHighBits -= 0x30;
+
+		if( i == nSrcLen - 1 )
+			nLowBits = 0;
+		else if( !isxdigit(nLowBits) )
+			return -1;
+		else if( nLowBits > 0x39 )
+			nLowBits -= 0x37;
+		else
+			nLowBits -= 0x30;
+
+		sDest[i / 2] = (nHighBits << 4) | (nLowBits & 0x0f);
+	}
+	return 0;
+}
+
 char *format_time( time_t tm)
 {
     static char str_tm[1024];
