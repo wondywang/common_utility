@@ -4,6 +4,22 @@
 
 using std::string;
 
+void Api_Debug_Log(const char *argc, ...)
+{
+#ifdef DEBUG
+	if(NULL == argc)	return;
+	char buff[1024<<4] = {0};
+	va_list args_ptr = NULL;
+	va_start(args_ptr, argc);
+	vsprintf(buff, argc, args_ptr);
+	va_end(args_ptr);
+	fputs(buff, stdout);
+#else
+	//do nothing
+#endif
+	return;
+}
+
 void hex2string(const unsigned char* hex, int hexLen, char* str, int *len)
 {
 	int i, o;
