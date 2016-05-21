@@ -4,7 +4,16 @@
 
 using std::string;
 
-void Api_Debug_Log(const char *argc, ...)
+#define KNRM  "\x1B[0m"
+#define KRED  "\x1B[31m"
+#define KGRN  "\x1B[32m"
+#define KYEL  "\x1B[33m"
+#define KBLU  "\x1B[34m"
+#define KMAG  "\x1B[35m"
+#define KCYN  "\x1B[36m"
+#define KWHT  "\x1B[37m"
+
+void myPrint(const char *argc, ...)
 {
 #ifdef DEBUG
 	if(NULL == argc)	return;
@@ -19,6 +28,16 @@ void Api_Debug_Log(const char *argc, ...)
 #endif
 	return;
 }
+
+#define Api_Debug_Log(format, ...)\
+	do {\
+		myPrint("\x1B[33m<debug>\x1B[0m%s::%s[%d]: "#format"\n", __FILE__, __FUNCTION__, __LINE__, ##__VA_ARGS__);\
+	} while (0)
+
+#define Api_Error_Log(format, ...)\
+	do {\
+		myPrint("\x1B[31m<error>%s::%s[%d]: "#format"\n\x1B[0m", __FILE__, __FUNCTION__, __LINE__, ##__VA_ARGS__);\
+	} while (0)
 
 void hex2string(const unsigned char* hex, int hexLen, char* str, int *len)
 {
