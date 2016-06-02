@@ -1,4 +1,5 @@
 //http://marcio.io/2015/07/singleton-pattern-in-go/
+//https://gobyexample.com/
 package main
 
 import (
