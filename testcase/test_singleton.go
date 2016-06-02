@@ -3,8 +3,8 @@
 package main
 
 import (
-	"fmt"
-	//	"strings"
+	"log"
+	"sync"
 )
 
 type Singleton struct {
@@ -12,47 +12,43 @@ type Singleton struct {
 	var2 string
 }
 
+var once sync.Once
 var _instance *Singleton
 
-func Instance(ch chan int) *Singleton {
-	ch <- 1
-	if _instance == nil {
-		fmt.Println("new singleton")
-		_instance = &Singleton{}
-	}
+func Instance() *Singleton {
+	once.Do(func() {
+		if _instance == nil {
+			log.Println("new singleton")
+			_instance = &Singleton{}
+			_instance.var1 = 0
+			_instance.var2 = "singleton instance!"
+		}
+	})
 	return _instance
 }
 
-func (self *Singleton) Instance(ch chan int) *Singleton {
-	ch <- 1
-	if _instance == nil {
-		_instance = &Singleton{}
-	}
-	return _instance
-}
-
-func (self *Singleton) HelloWorld() {
-	self.var1 = 100
-	self.var2 = "hello hello"
-	fmt.Println("func hello world!")
+func (self *Singleton) Process() {
+	self.var1 += 1
+	log.Println("todo something!")
 }
 
 func run(ch chan int) {
-	//      ch <- 1
-	hello := Instance(ch)
-	hello.HelloWorld()
-	fmt.Println(hello, " running...")
+	singleton := Instance()
+	singleton.Process()
+	log.Println(&singleton, " running...var1=", singleton.var1)
+	ch <- 1
 }
 
 func main() {
+	log.SetFlags(log.Lshortfile|log.LstdFlags)
 	chs := make([]chan int, 10)
 	for i, _ := range chs {
 		chs[i] = make(chan int)
-		fmt.Println("index: ", i)
+		log.Println("index: ", i)
 		go run(chs[i])
 	}
 
-	for _, ch := range chs {
-		<-ch
+	for i, _ := range chs {
+		<-chs[i]
 	}
 }
