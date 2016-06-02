@@ -17,14 +17,17 @@ var _instance *Singleton
 
 func Instance() *Singleton {
 	once.Do(func() {
-		if _instance == nil {
-			log.Println("new singleton")
-			_instance = &Singleton{}
-			_instance.var1 = 0
-			_instance.var2 = "singleton instance!"
-		}
+		log.Println("new singleton")
+		_instance = &Singleton{}
+		_instance.init()
 	})
 	return _instance
+}
+
+func (self *Singleton) init() {
+	log.Println("init once!")
+	self.var1 = 0
+	self.var2 = "singletion instance!"
 }
 
 func (self *Singleton) Process() {
@@ -40,7 +43,7 @@ func run(ch chan int) {
 }
 
 func main() {
-	log.SetFlags(log.Lshortfile|log.LstdFlags)
+	log.SetFlags(log.Lshortfile | log.LstdFlags)
 	chs := make([]chan int, 10)
 	for i, _ := range chs {
 		chs[i] = make(chan int)
