@@ -19,16 +19,22 @@ type Blog struct {
 }
 
 func (self *Blog) Notify() {
+	if len(self.obs) <= 0 {
+		log.Println("no observer update!")
+		return
+	}
 	for idx, item := range self.obs {
 		item.Update(idx)
 	}
 }
 
 func (self *Blog) Attach(ob Observer) {
+	log.Println("attach observer addr: ", &ob)
 	self.obs = append(self.obs, ob)
 }
 
 func (self *Blog) Detach(ob Observer) {
+	log.Println("detach observer addr: ", &ob)
 	for idx, item := range self.obs {
 		if item == ob {
 			self.obs = append(self.obs[0:idx], self.obs[idx+1:]...)
@@ -47,14 +53,16 @@ func (self *Publish) Update(idx int) {
 
 func (self *Publish) Listen() {
 	log.Println("listen publish!")
-	for {
-		select {
-		case msg := <-self.msg:
-			log.Println("get msg: ", msg)
-		default:
-//			log.Println("default case!")
+	go func() {
+		for {
+			select {
+			case msg := <-self.msg:
+				log.Println("get msg: ", msg)
+			default:
+	//			log.Println("default case!")
+			}
 		}
-	}
+	}()
 }
 
 func main() {
@@ -72,7 +80,6 @@ func main() {
 
 	blog.Attach(publisher1)
 	blog.Attach(publisher2)
-
 	blog.Notify()
 
 	blog.Detach(publisher1)
