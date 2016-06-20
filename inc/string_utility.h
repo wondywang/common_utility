@@ -131,6 +131,13 @@ char *format_time( time_t tm)
     return str_tm;
 }
 
+inline char* Int2Str(unsigned int iValue)
+{
+	static char buf[64];
+	snprintf(buf, sizeof(buf), "%u", iValue);
+	return buf;
+}
+
 /*
    SplitStr字符串分割函数，可以同时使用多种字符分割，无返回值
    参数1：pOriginal待分割的字符串
