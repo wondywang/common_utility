@@ -169,3 +169,99 @@ void SplitStr(const char* pOriginal,const char* pSplitor, std::vector<std::strin
         pHead = pEnd + sHead;
     }
 }
+
+bool API_Zip(string& strXml)
+{
+     char   sTmpBuf[1024];
+     size_t dwTmpLen = sizeof(sTmpBuf);
+     int iRet = compress((Bytef *)sTmpBuf, (uLongf *)&dwTmpLen, (const Bytef *)strXml.c_str(), strXml.size());
+     if(iRet != Z_OK)
+     {
+         return false;
+     }
+    strXml = "";
+	strXml.resize(1, 1);
+    strXml.append(sTmpBuf, dwTmpLen);
+	return true;
+}
+
+inline string API_XmlEncode(const char *pSrc, unsigned int uSrcLen=0)
+{
+    if(uSrcLen == 0)
+    {
+        uSrcLen = strlen(pSrc);
+    }
+    if(uSrcLen == 0)
+    {
+        return string("");
+    }
+    char *pBuf = new char[uSrcLen*6+1];
+    char *pDest = pBuf;
+    for(unsigned int i=0; i<uSrcLen; ++i)
+    {
+        switch(pSrc[i])
+        {
+            case '&':
+                memcpy(pDest, "&amp;", 5);
+                pDest += 5;
+                break;
+            case '<':
+                memcpy(pDest, "&lt;", 4);
+                pDest += 4;
+                break;
+            case '>':
+                memcpy(pDest, "&gt;", 4);
+                pDest += 4;
+                break;
+            case '\"':
+                memcpy(pDest, "&quot;", 6);
+                pDest += 6;
+                break;
+            case '\'':
+                memcpy(pDest, "&#39;", 5);
+                pDest += 5;
+                break;
+            case '\r':
+                break;
+            case '\t':
+                memcpy(pDest, "    ", 4);
+                pDest += 4;
+                break;
+            default:
+                *(pDest++) = pSrc[i];
+        }
+    }
+    string strReturn(pBuf, pDest-pBuf);
+    delete [] pBuf;
+
+    return strReturn;
+}
+
+string API_UrlEncode( const string& input )
+{
+	unsigned char hexchars[] = "0123456789ABCDEF" ;
+	char* s = (char*)input.c_str() ;
+	int len = input.size() ;
+	register int x, y ;
+	unsigned char* str ;
+	str = (unsigned char*)malloc(3 * len + 1) ;
+	for( x=0, y=0; len--; x++, y++ )
+	{
+		str[y] = (unsigned char)s[x] ;
+		if(str[y] == ' ')
+		{
+			str[y] = '+';
+		}
+//		else if( (str[y] < '0' && str[y] != '-' && str[y] != '.' && str[y] != '$' && str[y] != '+' && str[y] != '!' && str[y] != '*' && str[y] != '\'' && str[y] != '(' && str[y] != ')' && str[y] != ',') || (str[y] < 'A' && str[y] > '9') || (str[y] > 'Z' && str[y] < 'a' && str[y] != '_') || (str[y] > 'z') )
+		else if( (str[y] < '0' && str[y] != '-' && str[y] != '.') || (str[y] < 'A' && str[y] > '9') || (str[y] > 'Z' && str[y] < 'a' && str[y] != '_') || (str[y] > 'z') )
+		{
+			str[y++] = '%' ;
+			str[y++] = hexchars[(unsigned char) s[x] >> 4] ;
+			str[y] = hexchars[(unsigned char) s[x] & 15] ;
+		}
+	}
+	str[y] = '\0' ;
+	string result((char*)str) ;
+	free(str) ;
+	return result ;
+}
